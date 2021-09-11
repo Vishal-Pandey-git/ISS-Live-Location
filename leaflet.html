@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet.JS</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin="">
+    </script>
+    <script src="https://code.jquery.com/jquery-2.0.3.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous">
+    </script>
+</head>
+
+<body>
+    <div id="map" style="height: 97vh;">
+    </div>
+</body>
+<script>
+    var map = L.map('map').setView([0, 0], 2);
+
+    function moveISS() {
+        $.getJSON('http://api.open-notify.org/iss-now.json?callback=?', function (data) {
+            var lat = data['iss_position']['latitude'];
+            var lon = data['iss_position']['longitude'];
+
+            iss.setLatLng([lat, lon]);
+            isscirc.setLatLng([lat, lon]);
+            map.panTo([lat, lon], animate = true);
+        });
+        setTimeout(moveISS, 5000);
+    }
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 4,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    var ISSIcon = L.icon({
+        iconUrl: '/Open-Notify-API/map/ISSIcon.png',
+        iconSize: [50, 30],
+        iconAnchor: [25, 15],
+        popupAnchor: [50, 25],
+        shadowUrl: '/Open-Notify-API/map/ISSIcon_shadow.png',
+        shadowSize: [60, 40],
+        shadowAnchor: [30, 15]
+    });
+
+
+    var iss = L.marker([0, 0]).addTo(map)
+        .bindPopup('I am here!!');
+    var isscirc = L.circle([0, 0], 2200e3, {
+        color: "#c22",
+        opacity: 0.3,
+        weight: 1,
+        fillColor: "#c22",
+        fillOpacity: 0.1
+    }).addTo(map);
+
+    moveISS();
+</script>
+
+</html>
